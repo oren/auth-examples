@@ -17,11 +17,24 @@ module.exports = function (db, jwt_secret, jwt_expiry) {
         });
       });
     }),
-    bearer: new BearerStrategy(function (token, done) {
-        done();
-    }),
-    issue: function (req, res, next) {
-      next();
+    bearer: function (JWT_SECRET) {
+      return new BearerStrategy(function (token, done) {
+        jwt.verify(token, JWT_SECRET, function (err, decoded){
+          db.find(decoded.username, function (err, dbUser) {
+            if (err) return done(err);
+            if (!dbUser) return done(null, false);
+            return done(null, dbUser);
+          });
+        });
+      });
+    },
+    issue: function (JWT_SECRET, JWT_EXPIRY) {
+      return function(req, res, next) {
+          var obj = {username: req.user.username};
+          var token = jwt.sign(obj, JWT_SECRET, {expiresInMinutes: JWT_EXPIRY})
+          res.send('BEARER ' + token);
+          next();
+      };
     }
   }
 }

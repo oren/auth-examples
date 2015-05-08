@@ -20,6 +20,7 @@ module.exports = function (db, jwt_secret, jwt_expiry) {
     bearer: function (JWT_SECRET) {
       return new BearerStrategy(function (token, done) {
         jwt.verify(token, JWT_SECRET, function (err, decoded){
+          if (err) return done(err);
           db.find(decoded.username, function (err, dbUser) {
             if (err) return done(err);
             if (!dbUser) return done(null, false);

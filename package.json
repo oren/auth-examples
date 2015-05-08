@@ -1,0 +1,14 @@
+{
+  "name": "aath",
+  "dependencies": {
+    "bcrypt": "^0.8.2",
+    "bcrypt-nodejs": "0.0.3",
+    "jsonwebtoken": "^5.0.0",
+    "minimist": "^1.1.1",
+    "passport": "^0.2.1",
+    "passport-http-bearer": "^1.0.1",
+    "passport-local": "^1.0.0",
+    "restify": "^3.0.0",
+    "sqlite3": "^3.0.5"
+  }
+}

@@ -5,8 +5,6 @@ var DB_PATH = argv.dbPath
 
 var restify = require('restify');
 var passport = require('passport');
-var fs = require('fs');
-
 
 var db = require('./db')(DB_PATH)
 
@@ -23,12 +21,17 @@ var localAuth = passport.authenticate('local', {session: false});
 var server = restify.createServer({
   name: 'aath'
 });
+
 server.pre(restify.pre.userAgentConnection());
 server.use(restify.bodyParser({mapParams: false}));
 
 server.post('/login',
   localAuth,
   auth.issue(JWT_SECRET, JWT_EXPIRY)
+);
+
+server.get('/setup',
+  db.setUp
 );
 
 server.get('/restricted',

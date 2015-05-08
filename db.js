@@ -7,24 +7,28 @@ module.exports = function (path) {
 
   db.serialize(function () {
     db.run('CREATE TABLE IF NOT EXISTS users (username TEXT PRIMARY KEY, password TEXT, salt TEXT) WITHOUT ROWID');
+  });
 
-    var username = 'mats';
-    var password = '2k15';
-
-    bcrypt.genSalt(100, function (err, salt) {
-      if (err) throw err;
-      bcrypt.hash(password, salt, null, function (err, hashed) {
-        if (err) {console.log(err); return err};
-        db.run('INSERT OR FAIL INTO users VALUES (?, ?, ?)', username, hashed, salt, function (err, rows){
-          if (err) console.log(err);
-        })
-      })
-    })
-  })
 
   return {
     find: function (username, callback) {
       return db.get('SELECT * FROM users WHERE username=?', username, callback)
+    },
+    setUp: function (req, res, next){
+      var username = 'mats';
+      var password = '2k15';
+
+      bcrypt.genSalt(100, function (err, salt) {
+        if (err) return res.send(err);
+        bcrypt.hash(password, salt, null, function (err, hashed) {
+          if (err) return res.send(err);
+          db.run('INSERT OR FAIL INTO users VALUES (?, ?, ?)', username, hashed, salt, function (err, rows){
+            if (err) return res.send(err);
+            res.send('User created');
+            next();
+          })
+        })
+      });
     }
   }
 }

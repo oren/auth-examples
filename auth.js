@@ -20,7 +20,7 @@ module.exports = function (db, jwt_secret, jwt_expiry) {
     bearer: new BearerStrategy(function (token, done) {
       jwt.verify(token, jwt_secret, function (err, decoded){
         if (err) return done(err);
-        db.find(decoded.username, function (err, dbUser) {
+        db.find(decoded.iss, function (err, dbUser) {
           if (err) return done(err);
           if (!dbUser) return done(null, false);
           return done(null, dbUser);
@@ -28,7 +28,7 @@ module.exports = function (db, jwt_secret, jwt_expiry) {
       });
     }),
     issue: function(req, res, next) {
-      var obj = {username: req.user.username};
+      var obj = {iss: req.user.username};
       var token = jwt.sign(obj, jwt_secret, {expiresInMinutes: jwt_expiry})
       res.send('BEARER ' + token);
       next();

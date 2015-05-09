@@ -17,25 +17,21 @@ module.exports = function (db, jwt_secret, jwt_expiry) {
         });
       });
     }),
-    bearer: function (JWT_SECRET) {
-      return new BearerStrategy(function (token, done) {
-        jwt.verify(token, JWT_SECRET, function (err, decoded){
+    bearer: new BearerStrategy(function (token, done) {
+      jwt.verify(token, jwt_secret, function (err, decoded){
+        if (err) return done(err);
+        db.find(decoded.username, function (err, dbUser) {
           if (err) return done(err);
-          db.find(decoded.username, function (err, dbUser) {
-            if (err) return done(err);
-            if (!dbUser) return done(null, false);
-            return done(null, dbUser);
-          });
+          if (!dbUser) return done(null, false);
+          return done(null, dbUser);
         });
       });
-    },
-    issue: function (JWT_SECRET, JWT_EXPIRY) {
-      return function(req, res, next) {
-          var obj = {username: req.user.username};
-          var token = jwt.sign(obj, JWT_SECRET, {expiresInMinutes: JWT_EXPIRY})
-          res.send('BEARER ' + token);
-          next();
-      };
+    }),
+    issue: function(req, res, next) {
+      var obj = {username: req.user.username};
+      var token = jwt.sign(obj, jwt_secret, {expiresInMinutes: jwt_expiry})
+      res.send('BEARER ' + token);
+      next();
     }
   }
 }

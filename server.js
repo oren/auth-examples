@@ -7,14 +7,10 @@ var restify = require('restify');
 var passport = require('passport');
 
 var db = require('./db')(DB_PATH)
-
-
 var auth = require('./auth')(db, JWT_SECRET, JWT_EXPIRY);
 
-
 passport.use(auth.local);
-passport.use(auth.bearer(JWT_SECRET));
-
+passport.use(auth.bearer);
 var bearerAuth = passport.authenticate('bearer', {session: false});
 var localAuth = passport.authenticate('local', {session: false});
 
@@ -27,17 +23,17 @@ server.use(restify.bodyParser({mapParams: false}));
 
 server.post('/login',
   localAuth,
-  auth.issue(JWT_SECRET, JWT_EXPIRY)
+  auth.issue
 );
 
-server.get('/setup',
+server.post('/setup',
   db.setUp
 );
 
 server.get('/restricted',
   bearerAuth,
   function (req, res, next) {
-    res.send('Congrats.');
+    res.send('Congrats, ' + req.user.username);
     next();
   }
 )

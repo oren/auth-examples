@@ -5,13 +5,11 @@ module.exports = function (path) {
 
   var db = new sqlite3.Database(path || 'users.sqlite');
 
-  db.serialize(function () {
-    db.run(
-      'CREATE TABLE IF NOT EXISTS users ' +
-      '(username TEXT PRIMARY KEY, password TEXT, salt TEXT) ' +
-      'WITHOUT ROWID'
-    );
-  });
+  db.run(
+    'CREATE TABLE IF NOT EXISTS users ' +
+    '(username TEXT PRIMARY KEY, password TEXT, salt TEXT) ' +
+    'WITHOUT ROWID'
+  );
 
 
   return {

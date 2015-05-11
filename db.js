@@ -14,9 +14,12 @@ module.exports = function (path) {
 
   return {
     find: function (username, callback) {
-      return db.get('SELECT * FROM users WHERE username=?', username, callback)
+      return db.get(
+        'SELECT * FROM users WHERE username=?',
+        username,
+        callback)
     },
-    setUp: function (req, res, next){
+    setUp: function (req, res, next) {
       var username = req.body.username;
       var password = req.body.password;
 
@@ -29,7 +32,7 @@ module.exports = function (path) {
             username,
             hashed,
             salt,
-            function (err, rows){
+            function (err, rows) {
               if (err) return res.send(err);
               res.send('User ' + username + ' created');
               next();

@@ -1,3 +1,5 @@
+'use strict';
+
 var bcrypt = require('bcrypt-nodejs');
 var sqlite3 = require('sqlite3').verbose();
 
@@ -17,29 +19,30 @@ module.exports = function (path) {
       return db.get(
         'SELECT * FROM users WHERE username=?',
         username,
-        callback)
+        callback
+      );
     },
     setUp: function (req, res, next) {
       var username = req.body.username;
       var password = req.body.password;
 
       bcrypt.genSalt(100, function (err, salt) {
-        if (err) return res.send(err);
+        if (err) { return res.send(err); }
         bcrypt.hash(password, salt, null, function (err, hashed) {
-          if (err) return res.send(err);
+          if (err) { return res.send(err); }
           db.run(
             'INSERT OR FAIL INTO users VALUES (?, ?, ?)',
             username,
             hashed,
             salt,
             function (err, rows) {
-              if (err) return res.send(err);
-              res.send('User ' + username + ' created');
+              if (err) { return res.send(err); }
+              res.send('User ' + rows.username + ' created');
               next();
             }
           );
-        })
+        });
       });
     }
-  }
-}
+  };
+};

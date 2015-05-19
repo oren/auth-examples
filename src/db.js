@@ -35,9 +35,9 @@ module.exports = function (path) {
             username,
             hashed,
             salt,
-            function (err, rows) {
-              if (err) { return res.send(err); }
-              res.send('User ' + rows.username + ' created');
+            function (err) {
+              if (err) { return res.send(err); };
+              res.send('User ' + username + ' created');
               next();
             }
           );

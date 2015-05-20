@@ -26,8 +26,8 @@ module.exports = function (db, jwt_secret, jwt_expiry) {
       });
     }),
     issue: function (req, res, next) {
-      var obj = {iss: req.user.username};
-      var token = jwt.sign(obj, jwt_secret, {expiresInMinutes: jwt_expiry});
+      var claims = {iss: req.user.username, admin: true};
+      var token = jwt.sign(claims, jwt_secret, {expiresInMinutes: jwt_expiry});
       res.send('BEARER ' + token);
       next();
     }
